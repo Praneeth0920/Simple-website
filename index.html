@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login/Signup</title>
+  <style>
+    body {
+      background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_pgoHuvuMGt_8ovZZra-dq4ZuQCHA3XsBRw&s');
+      background-size: cover;
+      font-family: Arial, sans-serif;
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .toggle {
+      margin-top: 10px;
+      color: #4CAF50;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome</h1>
+    <form id="auth-form">
+      <input type="text" id="username" placeholder="Username" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit" id="submit-btn">Login</button>
+    </form>
+    <p class="toggle" id="toggle-text">Don't have an account? Sign up</p>
+  </div>
+
+  <script>
+    const authForm = document.getElementById('auth-form');
+    const toggleText = document.getElementById('toggle-text');
+    const submitBtn = document.getElementById('submit-btn');
+    let isLogin = true;
+
+    // Toggle between Login and Signup
+    toggleText.addEventListener('click', () => {
+      isLogin = !isLogin;
+      submitBtn.textContent = isLogin ? 'Login' : 'Signup';
+      toggleText.textContent = isLogin ? "Don't have an account? Sign up" : "Already have an account? Login";
+    });
+
+    // Handle form submission
+    authForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      if (isLogin) {
+        // Login
+        const user = JSON.parse(localStorage.getItem(username));
+        if (user && user.password === password) {
+          localStorage.setItem('currentUser', username);
+          window.location.href = 'dashboard.html';
+        } else {
+          alert('Invalid username or password');
+        }
+      } else {
+        // Signup
+        if (localStorage.getItem(username)) {
+          alert('Username already exists');
+        } else {
+          localStorage.setItem(username, JSON.stringify({ username, password, passwords: [] }));
+          alert('Account created successfully. Please login.');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

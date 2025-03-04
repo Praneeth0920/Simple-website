@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Password Storage</title>
+  <style>
+    /* Custom Background */
+    body {
+      background-image: url('https://i.ytimg.com/vi/vORslUw76mo/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLAzQ0W5MwhBY1Hk2-T-i8AF9Xbv4w'); /* Direct link to a random security-themed image */
+      background-size: cover;
+      font-family: Arial, sans-serif;
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      background: rgba(0, 0, 0, 0.7); /* Semi-transparent background for readability */
+      padding: 20px;
+      border-radius: 10px;
+      width: 400px;
+      margin: 50px auto;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #password-list {
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .password-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      position: relative;
+    }
+
+    .password-item button {
+      width: auto;
+      margin: 5px;
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    .password-item button.edit {
+      background-color: #ff9800;
+    }
+
+    .password-item button.delete {
+      background-color: #f44336;
+    }
+
+    .export-button {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Password Storage</h1>
+    <form id="password-form">
+      <input type="text" id="website" placeholder="Website" required>
+      <input type="text" id="username" placeholder="Username" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit">Save Password</button>
+    </form>
+
+    <div id="password-list">
+      <h2>Saved Passwords</h2>
+      <!-- Passwords will be displayed here -->
+    </div>
+
+    <button class="export-button" onclick="exportPasswords()">Export Passwords</button>
+  </div>
+
+  <script>
+    let passwords = [];
+
+    // Function to add or update a password
+    document.getElementById('password-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const website = document.getElementById('website').value;
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      const existingIndex = passwords.findIndex(p => p.website === website);
+
+      if (existingIndex !== -1) {
+        // Update existing password
+        passwords[existingIndex] = { website, username, password };
+      } else {
+        // Add new password
+        passwords.push({ website, username, password });
+      }
+
+      renderPasswords();
+      document.getElementById('password-form').reset();
+    });
+
+    // Function to render passwords
+    function renderPasswords() {
+      const passwordList = document.getElementById('password-list');
+      passwordList.innerHTML = '<h2>Saved Passwords</h2>';
+
+      passwords.forEach((item, index) => {
+        const passwordItem = document.createElement('div');
+        passwordItem.className = 'password-item';
+        passwordItem.innerHTML = `
+          <strong>Website:</strong> ${item.website}<br>
+          <strong>Username:</strong> ${item.username}<br>
+          <strong>Password:</strong> ${item.password}
+          <button class="edit" onclick="editPassword(${index})">Edit</button>
+          <button class="delete" onclick="deletePassword(${index})">Delete</button>
+        `;
+        passwordList.appendChild(passwordItem);
+      });
+    }
+
+    // Function to edit a password
+    function editPassword(index) {
+      const password = passwords[index];
+      document.getElementById('website').value = password.website;
+      document.getElementById('username').value = password.username;
+      document.getElementById('password').value = password.password;
+    }
+
+    // Function to delete a password
+    function deletePassword(index) {
+      passwords.splice(index, 1);
+      renderPasswords();
+    }
+
+    // Function to export passwords to a file
+    function exportPasswords() {
+      const data = JSON.stringify(passwords, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'passwords.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Initial render
+    renderPasswords();
+  </script>
+</body>
+</html>
